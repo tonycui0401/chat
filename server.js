@@ -3,12 +3,42 @@ const app = express();
 const port = 8002;
 var server = require("http").Server(app);
 const io = require("socket.io")(server);
-const users = require("./configs/users");
+// const users = require("./configs/users");
 const cors = require("cors");
+const moment = require('moment');
+// const { Users } = require('./users');
+
+
+// var users = new Users();
 
 app.use(cors());
 
 var clients = {};
+var users = {}
+
+var generateMessage = (from, room, type, text) => {
+  return {
+      from,
+      room,
+      type,
+      text,
+      createdDate: moment().valueOf()
+  }
+};
+
+var generateUserMessage = (from, room, type, text, name, img) => {
+  return {
+      from,
+      room,
+      type,
+      text,
+      name,
+      img,
+      createdDate: moment().valueOf()
+  }
+};
+
+
 
 io.on("connection", function(client) {
   client.on("sign-in", e => {
@@ -34,6 +64,63 @@ io.on("connection", function(client) {
   //     clients[user_id] = [client];
   //   }
   // });
+
+
+  client.on('join', (params, callback) => {
+
+    // if (!isRealString(params.name) || !isRealString(params.room)) {
+    //     return callback('Bad request');
+    // }
+
+    // console.log("get user name")
+    // console.log(params.name)
+
+    client.join(params.room_id);
+    // users.removeUser(socket.id);
+    // users.addUser(socket.id, params.name, params.room);
+
+    // io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+    // client.emit('newMessage', generateMessage('Admin', params.room, 'Welcome to the chat app.'));
+
+
+
+
+    if(!users[params.room_id]){
+      users[params.room_id]={}
+    }
+
+    // if(!users[params.room_id].user_id){
+    client.emit('newMessage', generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`));
+    users[params.room_id].user_id = params.user_id
+    // }
+
+
+
+
+    // client.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', params.room, `${params.user_id} has joined.`));
+
+    callback();
+});
+
+
+client.on('createMessage', (message, callback) => {
+  // var user = users.getUser(client.id);
+  // if (user && isRealString(message.text)) {
+    console.log("on create new messages")
+    console.log(message)
+      let tempObj = generateUserMessage(message.user_id, message.room, 'in', message.text, message.name, message.img);
+      io.to(message.room).emit('newMessage', tempObj);
+      callback({
+          data: tempObj
+      });
+  // }
+  console.log("get client id")
+
+  // console.log(client.id)
+  callback();
+});
+
+
 
   client.on("message", e => {
     let targetId = e.to;
