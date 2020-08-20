@@ -121,10 +121,7 @@ io.on("connection", function(client) {
     member[params.room_id].users.push(params.user_id)
 
     users[params.room_id].users.push(newUser)
-    client.emit('newMessage', generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`, users));
-    
-    client.broadcast.to(params.room_id).emit('newMessage', generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`, users));
-
+  
     
     // let tempObj = generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`, users)
 
@@ -135,7 +132,10 @@ io.on("connection", function(client) {
 
     }
 
+    client.emit('newMessage', generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`, users));
     
+    client.broadcast.to(params.room_id).emit('newMessage', generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`, users));
+
 
 
     // client.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', params.room, `${params.user_id} has joined.`));
