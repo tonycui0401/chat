@@ -15,13 +15,14 @@ app.use(cors());
 
 var clients = {};
 var users = {}
-
-var generateMessage = (from, room, type, text) => {
+var member = {}
+var generateMessage = (from, room, type, text, user) => {
   return {
       from,
       room,
       type,
       text,
+      user,
       createdDate: moment().valueOf()
   }
 };
@@ -89,12 +90,52 @@ io.on("connection", function(client) {
       users[params.room_id]={}
     }
 
+    if(!member[params.room_id]){
+      member[params.room_id]={}
+    }
+
+    // users[params.room_id].user_id = params.user_id
+    if(!users[params.room_id].users){
+      users[params.room_id].users=[]
+    }
+
+    if(!member[params.room_id].users){
+      member[params.room_id].users=[]
+    }
+
+
     // if(!users[params.room_id].user_id){
-    client.emit('newMessage', generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`));
-    users[params.room_id].user_id = params.user_id
-    // }
 
+    // users[params.room_id].user_id = params.user_id
 
+    if(!member[params.room_id].users.includes(params.user_id)){
+    
+      let newUser = {
+        user_id: params.user_id,
+        firstname: params.firstname,
+        lastname: params.lastname,
+        img: params.img,
+        joinDate: moment().valueOf()
+    }
+
+    member[params.room_id].users.push(params.user_id)
+
+    users[params.room_id].users.push(newUser)
+    client.emit('newMessage', generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`, users));
+    
+    client.broadcast.to(params.room_id).emit('newMessage', generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`, users));
+
+    
+    // let tempObj = generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`, users)
+
+    // io.to(params.room).emit('newMessage', tempObj);
+    // callback({
+    //     data: tempObj
+    // });
+
+    }
+
+    
 
 
     // client.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', params.room, `${params.user_id} has joined.`));
