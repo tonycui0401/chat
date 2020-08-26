@@ -34,25 +34,22 @@ app.use(cors());
 var clients = {};
 var users = {}
 var member = {}
-var generateMessage = (from, room, type, text, user) => {
+var generateMessage = (from, room) => {
   return {
       from,
       room,
-      type,
-      text,
-      user,
+      // user,
       createdDate: moment().valueOf()
   }
 };
 
-var generateUserMessage = (from, room, type, text, name, img) => {
+var generateUserMessage = (from, room, location, type, text) => {
   return {
       from,
       room,
+      location:location,
       type,
-      text,
-      name,
-      img,
+      text:text,
       createdDate: moment().valueOf()
   }
 };
@@ -175,9 +172,9 @@ console.log("print me")
   
       }
   
-      client.emit('newMessage', generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`, users));
+      client.emit('newMessage', generateMessage(params.user_id, params.room_id));
     
-      client.broadcast.to(params.room_id).emit('newMessage', generateMessage(params.user_id, params.room_id, params.img, `${params.firstname} ${params.lastname}`, users));
+      client.broadcast.to(params.room_id).emit('newMessage', generateMessage(params.user_id, params.room_id));
   
 
 
@@ -264,7 +261,7 @@ client.on('createMessage', (message, callback) => {
   // if (user && isRealString(message.text)) {
     console.log("on create new messages")
     console.log(message)
-      let tempObj = generateUserMessage(message.user_id, message.room, 'in', message.type, message.text, message.name, message.img);
+      let tempObj = generateUserMessage(message.user_id, message.room, 'in', message.type, message.text);
       io.to(message.room).emit('newMessage', tempObj);
       callback({
           data: tempObj
@@ -457,7 +454,36 @@ client.on('createMessage', (message, callback) => {
 
 
 
-  client.on("disconnect", function() {
+  client.on("disconnect", id=> {
+
+    let targetId = 78;
+    let sourceId = 77;
+  //  io.emit("offline", user);
+  io.emit("offline", {user_id:client.user_id});
+
+    // if(targetId && clients[targetId]) {
+    //   clients[targetId].forEach(cli => {
+
+    //     client.emit("offline", user);
+
+    //     console.log("emited this")
+    //   });
+    // }
+
+    // if(sourceId && clients[sourceId]) {
+    //   clients[sourceId].forEach(cli => {
+
+    //     cli.emit("offline", "exit me from the room "+user.user_id);
+       
+    //     console.log("emited that")
+    //   });
+    // }
+
+
+
+
+
+
     if (!client.user_id || !clients[client.user_id]) {
       return;
     }
