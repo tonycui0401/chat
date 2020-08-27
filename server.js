@@ -59,6 +59,12 @@ var generateUserMessage = (from, room, location, type, text) => {
 io.on("connection", function(client) {
   client.on("sign-in", e => {
     let user_id = e.user_id;
+
+
+  
+
+
+
     if (!user_id) return;
     client.user_id = user_id;
     console.log("client user id")
@@ -68,6 +74,17 @@ io.on("connection", function(client) {
     } else {
       clients[user_id] = [client];
     }
+
+
+    fetch(local_endpoint+'/updateUserChatStatus?id='+client.user_id +'&chatstatus=online'
+    , {
+      method: 'put',
+      headers: { 'Content-Type': 'application/json' },
+  })
+  .then(res => res.json())
+  .then(json => console.log(json));
+
+
   });
 
   //   client.on("sign-in", e => {
@@ -130,6 +147,7 @@ console.log("print me")
       console.log(member[params.room_id].users.includes(params.user_id))
 
       console.log("end check members")
+
 
 
       if(!member[params.room_id].users.includes(params.user_id)){
@@ -460,6 +478,16 @@ client.on('createMessage', (message, callback) => {
     let sourceId = 77;
   //  io.emit("offline", user);
   io.emit("offline", {user_id:client.user_id});
+
+
+  fetch(local_endpoint+'/updateUserChatStatus?id='+client.user_id+'&chatstatus=offline'
+  , {
+    method: 'put',
+    headers: { 'Content-Type': 'application/json' },
+})
+.then(res => res.json())
+.then(json => console.log(json));
+
 
     // if(targetId && clients[targetId]) {
     //   clients[targetId].forEach(cli => {
