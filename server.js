@@ -9,12 +9,35 @@ const moment = require('moment');
 // const { Users } = require('./users');
 // const models = require("./models");
 
-const {local_endpoint, remote_endpoint} = require('./configs/config');
+const {local_endpoint, remote_endpoint, local_base} = require('./configs/config');
 // const DB = require('./db.js');
 // const apiAuth = require('./routes/auth');
 
 const fetch = require('node-fetch');
 // var users = new Users();
+
+// const aws = require('aws-sdk');
+
+// require('dotenv').config(); // Configure dotenv to load in the .env file
+// // Configure aws with your accessKeyId and your secretAccessKey
+// aws.config.update({
+//   region: 'us-east-1', // Put your aws region here
+//   accessKeyId: process.env.AWSAccessKeyId,
+//   secretAccessKey: process.env.AWSSecretKey
+// });
+
+// const S3_BUCKET = process.env.Bucket;
+
+
+
+
+
+
+
+
+
+
+
 
 app.use(cors());
 
@@ -417,6 +440,7 @@ client.on('createMessage', (message, callback) => {
       });
     }
 
+
     fetch(local_endpoint+'/createPrivateChat'
     , {
       method: 'post',
@@ -432,9 +456,12 @@ client.on('createMessage', (message, callback) => {
   .then(res => res.json())
   .then(json => console.log(json));
     
+
+
+
   });
 
-
+ 
 
 
 
@@ -540,6 +567,10 @@ app.get('/users', (req, res) => {
     
     });
 
+
+
+
+
   // console.log(models.location_tag)
 
   // const location_tag = models.location_tag.findAll({
@@ -550,6 +581,95 @@ app.get('/users', (req, res) => {
   // console.log(location_tag)
 
 });
+
+
+
+
+app.get('/sign_s3_chat_image', (req, res) => {
+
+  const fileurl = req.query.fileurl;
+  const fileext = req.query.fileext;
+  const user_id = req.query.user_id;
+  const from_id = req.query.from_id;
+
+  // const rand = Math.random().toString(36).substring(7);
+  // const fileName = rand;
+
+//   fetch(local_base+'/sign_s3_chat_image'
+//   , {
+//     method: 'post',
+//     body:    JSON.stringify({
+//       fileType:fileType,
+//       fileName:fileName
+//     }),
+//     headers: { 'Content-Type': 'application/json' },
+// })
+// .then(res => res.json())
+// .then(json => console.log(json));
+
+
+
+  // const s3 = new aws.S3(); // Create a new instance of S3
+  // const rand = Math.random().toString(36).substring(7);
+  // const fileName = rand;
+  // // const chatstatus = req.query.chatstatus;
+  // const fileType = "png";
+
+
+
+  // // const fileType = req.query.filetype;
+
+  // // console.log("get the uploaded file name")
+  // // console.log(req.query.filename)
+  // // console.log("end get the uploaded file name")
+
+  // // Set up the payload of what we are sending to the S3 api
+  // const s3Params = {
+  //   Bucket: S3_BUCKET,
+  //   Key: `chat_images/${fileName}`,
+  //   Expires: 50,
+  //   ContentType: fileType,
+  //   ACL: 'public-read',
+  // };
+  // // Make a request to the S3 API to get a signed URL which we can use to upload our file
+  // s3.getSignedUrl('putObject', s3Params, (err, data) => {
+  //   if (err) {
+  //     console.log(err);
+  //     res.json({ success: false, error: err });
+  //   }
+  //   // Data payload of what we are sending back, the url of the signedRequest and a URL where we can access the content after its saved.
+  //   const returnData = {
+  //     signedRequest: data,
+  //     url: `http://${S3_BUCKET}.s3.amazonaws.com/chat_images/${fileName}`,
+  //     filename: fileName
+  //   };
+  //   //  db.query(`update users set userimg = '${user_img}' where id =${id}`)) {
+  //   //     return 'image updated';
+  //   //   }
+
+    io.emit("new image message", {url:fileurl, user_id:user_id, from_id:from_id, fileext:fileext});
+
+
+    
+
+    // res.json({ success: true, data: { returnData } });
+  // });
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 // app.get("/users", (req, res) => {
 //   res.send({ data: users });
 // });
