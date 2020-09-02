@@ -336,17 +336,6 @@ client.on('createMessage', (message, callback) => {
 .then(res => res.json())
 .then(json => {
   
-  // console.log("check members")
-  // console.log(json)
-  // for (let i = 0; i < 10; i++) {
-  //   if (i === 3) {
-  //     continue;
-  //   }
-  //   text = text + i;
-  // }
- 
-  //   users[params.room_id].users=json
-  //   console.log("print me out")
     for (let i in json){
 
       if (json[i].member === message.user_id) {
@@ -371,11 +360,6 @@ client.on('createMessage', (message, callback) => {
 
 
 });
-
-
-
-
-
 
 
 
@@ -582,6 +566,17 @@ app.get('/users', (req, res) => {
 
 });
 
+
+app.get('/sign_s3_chat_group_image', (req, res) => {
+  const fileurl = req.query.fileurl;
+  const fileext = req.query.fileext;
+  const user_id = req.query.user_id;
+  const room_id = req.query.room_id;
+
+
+io.emit("new group image message", {url:fileurl, user_id:user_id, room_id:room_id, fileext:fileext});
+
+});
 
 
 
