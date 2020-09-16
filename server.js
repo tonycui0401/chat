@@ -123,7 +123,7 @@ io.on("connection", function(client) {
   // });
 
 
-  client.on('join', (params, callback) => {
+  client.on('join', (params) => {
 
     // if (!isRealString(params.name) || !isRealString(params.room)) {
     //     return callback('Bad request');
@@ -294,20 +294,20 @@ console.log("print me")
 
     // client.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', params.room, `${params.user_id} has joined.`));
 
-    callback();
+    // callback();
 });
 
 
-client.on('createMessage', (message, callback) => {
+client.on('createMessage', (message) => {
   // var user = users.getUser(client.id);
   // if (user && isRealString(message.text)) {
     console.log("on create new messages")
     console.log(message)
       let tempObj = generateUserMessage(message.user_id, message.room, 'in', message.type, message.text);
       io.to(message.room).emit('newMessage', tempObj);
-      callback({
-          data: tempObj
-      });
+      // callback({
+      //     data: tempObj
+      // });
   // }
 
 
@@ -379,7 +379,7 @@ client.on('createMessage', (message, callback) => {
   console.log("get client id")
 
   // console.log(client.id)
-  callback();
+  // callback();
 });
 
 
