@@ -304,7 +304,7 @@ client.on('createMessage', (message) => {
     console.log("on create new messages")
     console.log(message)
       let tempObj = generateUserMessage(message.user_id, message.room, 'in', message.type, message.text);
-      io.to(message.room).emit('newMessage', tempObj);
+      io.to(message.room).emit('newGroupMessage', tempObj);
       // callback({
       //     data: tempObj
       // });
